@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
-* Студент: [Алексей Гуков](https://up.htmlacademy.ru/ecmascript/11/user/277789).
-* Наставник: `Неизвестно`.
+- Студент: [Алексей Гуков](https://up.htmlacademy.ru/ecmascript/11/user/277789).
+- Наставник: [Артем Приходько](https://up.htmlacademy.ru/ecmascript/11/user/1012525).
 
 ---
 
