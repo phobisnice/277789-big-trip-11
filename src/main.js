@@ -209,7 +209,7 @@ const createDaypointElement = () => {
         </ul>
       </li>
     </ul>`
-  )
+  );
 };
 
 const createWaypointElement = () => {
