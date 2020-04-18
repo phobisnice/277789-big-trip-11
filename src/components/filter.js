@@ -9,7 +9,7 @@ const createFilterMarkup = (filter, isActive = false, disabledFilter) => {
 };
 
 export const createFilterElement = (filters, dates) => {
-  const currentDate = Date.parse(new Date());
+  const currentDate = Date.now();
   let disabled = ``;
 
   if (dates.every((date) => date < currentDate)) {

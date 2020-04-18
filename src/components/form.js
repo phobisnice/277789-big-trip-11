@@ -1,4 +1,4 @@
-import {formatTime, getPointTypeGroup} from '../utils.js';
+import {formatTime, getPointTypeGroup, formatDateToUSLocale} from '../utils.js';
 import {POINT_TYPES, CITIES, ADDITIONAL_OPTIONS} from '../const.js';
 
 const createEventTypesMarkup = (types, activeType) => {
@@ -49,8 +49,8 @@ export const createFormElement = (wayPoint) => {
   const transferEventTypesMarkup = createEventTypesMarkup(transferEvents, type);
   const cityOptions = createCityOptionsMarkup(CITIES);
   const photosMarkup = photos ? createDestinationPhotosMarkup(photos) : ``;
-  const startDateWithSlashes = new Date(startDate).toLocaleDateString(`en-GB`, {year: `2-digit`, month: `2-digit`, day: `2-digit`});
-  const endDateWithSlashes = new Date(endDate).toLocaleDateString(`en-US`, {year: `2-digit`, month: `2-digit`, day: `2-digit`});
+  const startDateWithSlashes = formatDateToUSLocale(startDate);
+  const endDateWithSlashes = formatDateToUSLocale(endDate);
   const startFormatTime = formatTime(startDate);
   const endFormatTime = formatTime(endDate);
   const additionalOptions = createAdditionalOptionsMarkup(ADDITIONAL_OPTIONS, type, options);

@@ -39,6 +39,10 @@ const formatTimeToISO = (date, accuracy = 16) => {
   return new Date(date).toISOString().slice(0, accuracy);
 };
 
+const formatDateToUSLocale = (date) => {
+  return new Date(date).toLocaleDateString(`en-US`, {year: `2-digit`, month: `2-digit`, day: `2-digit`});
+};
+
 const getTimeDuration = (start, end) => {
   const diff = end - start;
   const days = Math.floor(diff / DAY_TO_MILLISECONDS);
@@ -89,4 +93,4 @@ const getPointTypeGroup = (type) => {
   return group;
 };
 
-export {getRandomIntegerNumber, getRandomArrayItem, getRandomDate, formatTime, formatTimeToISO, getTimeDuration, createCalendarDate, getPointTypeGroup};
+export {getRandomIntegerNumber, getRandomArrayItem, getRandomDate, formatTime, formatTimeToISO, getTimeDuration, formatDateToUSLocale, createCalendarDate, getPointTypeGroup};
