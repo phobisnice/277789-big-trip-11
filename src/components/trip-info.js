@@ -1,6 +1,6 @@
-import {createCalendarDate} from '../utils.js';
+import {createElement, createCalendarDate} from '../utils.js';
 
-export const createTripInfoElement = (sortedPointsByDate) => {
+const createTripInfoElement = (sortedPointsByDate) => {
   let cities = ``;
   let pointsLength = sortedPointsByDate.length;
   let dates = pointsLength ? createCalendarDate(sortedPointsByDate[0].startDate, sortedPointsByDate[sortedPointsByDate.length - 1].endDate) : ``;
@@ -23,3 +23,26 @@ export const createTripInfoElement = (sortedPointsByDate) => {
     </section>`
   );
 };
+
+export default class TripInfo {
+  constructor(points) {
+    this._points = points;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoElement(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

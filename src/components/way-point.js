@@ -1,4 +1,4 @@
-import {formatTime, formatTimeToISO, getTimeDuration, getPointTypeGroup} from '../utils.js';
+import {createElement, formatTime, formatTimeToISO, getTimeDuration, getPointTypeGroup} from '../utils.js';
 
 const createOffersMarkup = (offers) => {
   return offers.map(({title, cost}) => {
@@ -12,7 +12,7 @@ const createOffersMarkup = (offers) => {
   }).slice(0, 3).join(``);
 };
 
-export const createWayPointElement = (wayPoint) => {
+const createWayPointElement = (wayPoint) => {
   const {type, startDate, endDate, price, city, options} = wayPoint;
 
   const startDateISO = formatTimeToISO(startDate);
@@ -56,3 +56,26 @@ export const createWayPointElement = (wayPoint) => {
     </li>`
   );
 };
+
+export default class WayPoint {
+  constructor(wayPoint) {
+    this._wayPoint = wayPoint;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createWayPointElement(this._wayPoint);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

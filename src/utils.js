@@ -4,6 +4,24 @@ const DAY_TO_MILLISECONDS = 86400000;
 const HOUR_TO_MILLISECONDS = 3600000;
 const MINUTE_TO_MILLISECONDS = 60000;
 
+const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
+const renderElement = (container, element, position) => {
+  switch (position) {
+    case `afterbegin`:
+      container.prepend(element);
+      break;
+    default:
+      container.append(element);
+      break;
+  }
+};
+
 const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
 };
@@ -65,7 +83,7 @@ const createCalendarDate = (startDate, endDate) => {
   if (endDate && startDate !== endDate) {
     const endDateObject = new Date(endDate);
     const endDay = endDateObject.getDate();
-    const endMonth = MONTHS[dateObject.getMonth()];
+    const endMonth = MONTHS[endDateObject.getMonth()];
     calendarDate += ` — ${endMonth} ${endDay}`;
 
   }
@@ -93,4 +111,4 @@ const getPointTypeGroup = (type) => {
   return group;
 };
 
-export {getRandomIntegerNumber, getRandomArrayItem, getRandomDate, formatTime, formatTimeToISO, getTimeDuration, formatDateToUSLocale, createCalendarDate, getPointTypeGroup};
+export {createElement, renderElement, getRandomIntegerNumber, getRandomArrayItem, getRandomDate, formatTime, formatTimeToISO, getTimeDuration, formatDateToUSLocale, createCalendarDate, getPointTypeGroup};

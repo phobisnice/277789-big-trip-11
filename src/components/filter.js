@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 const createFilterMarkup = (filter, isActive = false, disabledFilter) => {
   const isDisabled = filter === disabledFilter ? `disabled` : ``;
   const lowerCaseFilter = filter.toLowerCase();
@@ -8,7 +10,7 @@ const createFilterMarkup = (filter, isActive = false, disabledFilter) => {
   </div>`;
 };
 
-export const createFilterElement = (filters, dates) => {
+const createFilterElement = (filters, dates) => {
   const currentDate = Date.now();
   let disabled = ``;
 
@@ -23,9 +25,34 @@ export const createFilterElement = (filters, dates) => {
   const filtersMarkup = filters.map((it, i) => createFilterMarkup(it, i === 0, disabled)).join(``);
 
   return (
-    `<form class="trip-filters" action="#" method="get">
+    `<h2 class="visually-hidden">Filter events</h2>
+    <form class="trip-filters" action="#" method="get">
       ${filtersMarkup}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
   );
 };
+
+export default class Filter {
+  constructor(filters, dates) {
+    this._filters = filters;
+    this._dates = dates;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilterElement(this._filters, this._dates);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,4 +1,4 @@
-import {formatTime, getPointTypeGroup, formatDateToUSLocale} from '../utils.js';
+import {createElement, formatTime, getPointTypeGroup, formatDateToUSLocale} from '../utils.js';
 import {POINT_TYPES, CITIES, ADDITIONAL_OPTIONS} from '../const.js';
 
 const createEventTypesMarkup = (types, activeType) => {
@@ -40,7 +40,7 @@ const createDestinationPhotosMarkup = (photos) => {
   }).join(``);
 };
 
-export const createFormElement = (wayPoint) => {
+const createFormElement = (wayPoint) => {
   const {type, city, price, destination, photos, startDate, endDate, options} = wayPoint;
   const pretext = getPointTypeGroup(type) === `activity` ? `in` : `to`;
   const activityEvents = POINT_TYPES.filter((it) => getPointTypeGroup(it) === `activity`);
@@ -136,3 +136,26 @@ export const createFormElement = (wayPoint) => {
     </form>`
   );
 };
+
+export default class Form {
+  constructor(wayPoint) {
+    this._wayPoint = wayPoint;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFormElement(this._wayPoint);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
