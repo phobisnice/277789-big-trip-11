@@ -1,46 +1,16 @@
-import {createTripInfoElement} from './components/trip-info.js';
-import {createTripCostElement} from './components/trip-cost.js';
-import {createMenuElement} from './components/menu.js';
-import {createFilterElement} from './components/filter.js';
-import {createSortElement} from './components/sort.js';
-import {createFormElement} from './components/form.js';
-import {createDayPointElement} from './components/day-point.js';
-import {createWayPointElement} from './components/way-point.js';
+import DayPointComponent from './components/day-point.js';
+import EventsContentComponent from './components/events-content.js';
+import FilterComponent from './components/filter.js';
+import FormComponent from './components/form.js';
+import MenuComponent from './components/menu.js';
+import SortComponent from './components/sort.js';
+import TripCostComponent from './components/trip-cost.js';
+import TripInfoComponent from './components/trip-info.js';
+import WayPointComponent from './components/way-point.js';
+
 import {POINTS_COUNT, FILTERS} from './const.js';
-import {formatTimeToISO} from './utils.js';
+import {renderElement, formatTimeToISO} from './utils.js';
 import {generateWayPoints} from './mock/way-point.js';
-
-const renderElement = (container, template, position = `beforeend`) => {
-  container.insertAdjacentHTML(position, template);
-};
-
-const wayPoints = generateWayPoints(POINTS_COUNT);
-const totalWayPointsCost = wayPoints.reduce((sum, it) => {
-  return sum + it.price;
-}, 0);
-
-const sortedPointsByDate = wayPoints.slice().sort((a, b) => a.startDate - b.startDate);
-
-const startDates = wayPoints.map((it) => it.startDate);
-
-const headerContent = document.querySelector(`.trip-main`);
-
-renderElement(headerContent, createTripInfoElement(sortedPointsByDate), `afterbegin`);
-
-const headerInformation = headerContent.querySelector(`.trip-info`);
-
-renderElement(headerInformation, createTripCostElement(totalWayPointsCost));
-
-const headerControls = headerContent.querySelector(`.trip-controls`);
-const headerMenuTitle = headerControls.querySelector(`h2`);
-
-renderElement(headerControls, createFilterElement(FILTERS, startDates));
-renderElement(headerMenuTitle, createMenuElement(), `afterend`);
-
-const eventsContent = document.querySelector(`.trip-events`);
-
-renderElement(eventsContent, createSortElement());
-renderElement(eventsContent, createFormElement(sortedPointsByDate[0]));
 
 const getMapOfPointsByDays = (points) => {
   const pointsMap = new Map();
@@ -57,12 +27,62 @@ const getMapOfPointsByDays = (points) => {
   return pointsMap;
 };
 
-const dayPoints = getMapOfPointsByDays(sortedPointsByDate.slice(1));
-let dayCount = 1;
+const renderWayPoint = (pointsListElement, wayPoint) => {
+  const onEditButtonClick = () => {
+    pointsListElement.replaceChild(formComponent.getElement(), wayPointComponent.getElement());
+  };
 
-dayPoints.forEach((points, day) => {
-  const pointsByDay = points.map((point) => {
-    return createWayPointElement(point);
-  }).join(``);
-  renderElement(eventsContent, createDayPointElement(day, pointsByDay, dayCount++));
-});
+  const onEditFormSubmit = (evt) => {
+    evt.preventDefault();
+    pointsListElement.replaceChild(wayPointComponent.getElement(), formComponent.getElement());
+  };
+
+  const wayPointComponent = new WayPointComponent(wayPoint);
+  const editButton = wayPointComponent.getElement().querySelector(`.event__rollup-btn`);
+  editButton.addEventListener(`click`, onEditButtonClick);
+
+  const formComponent = new FormComponent(wayPoint);
+  const editForm = formComponent.getElement();
+  editForm.addEventListener(`submit`, onEditFormSubmit);
+
+  renderElement(pointsListElement, wayPointComponent.getElement());
+};
+
+const renderEventsContent = (eventsContentComponent, sortedPoints) => {
+  renderElement(eventsContentComponent.getElement(), new SortComponent().getElement());
+
+  const dayPoints = getMapOfPointsByDays(sortedPoints);
+  let dayCount = 1;
+
+  dayPoints.forEach((points, day) => {
+    const dayPointElement = new DayPointComponent(day, dayCount++).getElement();
+    renderElement(eventsContentComponent.getElement(), dayPointElement);
+    const wayPointsListElement = dayPointElement.querySelector(`.trip-events__list`);
+    points.forEach((point) => renderWayPoint(wayPointsListElement, point));
+  });
+};
+
+const wayPoints = generateWayPoints(POINTS_COUNT);
+const totalWayPointsCost = wayPoints.reduce((sum, it) => {
+  return sum + it.price;
+}, 0);
+
+const sortedPointsByDate = wayPoints.slice().sort((a, b) => a.startDate - b.startDate);
+
+const startDates = wayPoints.map((it) => it.startDate);
+
+const headerContentElement = document.querySelector(`.trip-main`);
+const headerControlsElement = headerContentElement.querySelector(`.trip-controls`);
+const tripInfoComponent = new TripInfoComponent(sortedPointsByDate);
+
+renderElement(headerContentElement, tripInfoComponent.getElement(), `afterbegin`);
+renderElement(tripInfoComponent.getElement(), new TripCostComponent(totalWayPointsCost).getElement());
+renderElement(headerControlsElement, new MenuComponent().getElement());
+renderElement(headerControlsElement, new FilterComponent(FILTERS, startDates).getElement());
+
+const pageContentElement = document.querySelector(`.page-main .page-body__container`);
+const eventsContentComponent = new EventsContentComponent();
+
+renderElement(pageContentElement, eventsContentComponent.getElement());
+
+renderEventsContent(eventsContentComponent, sortedPointsByDate);
