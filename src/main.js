@@ -1,4 +1,5 @@
 import DayPointComponent from './components/day-point.js';
+import EmptyComponent from './components/empty.js';
 import EventsContentComponent from './components/events-content.js';
 import FilterComponent from './components/filter.js';
 import FormComponent from './components/form.js';
@@ -28,27 +29,48 @@ const getMapOfPointsByDays = (points) => {
 };
 
 const renderWayPoint = (pointsListElement, wayPoint) => {
-  const onEditButtonClick = () => {
+  const replaceWayPointToForm = () => {
     pointsListElement.replaceChild(formComponent.getElement(), wayPointComponent.getElement());
   };
 
-  const onEditFormSubmit = (evt) => {
-    evt.preventDefault();
+  const replaceFormToWayPoint = () => {
     pointsListElement.replaceChild(wayPointComponent.getElement(), formComponent.getElement());
+  };
+
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      replaceFormToWayPoint();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
   };
 
   const wayPointComponent = new WayPointComponent(wayPoint);
   const editButton = wayPointComponent.getElement().querySelector(`.event__rollup-btn`);
-  editButton.addEventListener(`click`, onEditButtonClick);
+
+  editButton.addEventListener(`click`, () => {
+    replaceWayPointToForm();
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
 
   const formComponent = new FormComponent(wayPoint);
   const editForm = formComponent.getElement();
-  editForm.addEventListener(`submit`, onEditFormSubmit);
+  editForm.addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceFormToWayPoint();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
 
   renderElement(pointsListElement, wayPointComponent.getElement());
 };
 
 const renderEventsContent = (eventsContentComponent, sortedPoints) => {
+  if (!sortedPoints.length) {
+    renderElement(eventsContentComponent.getElement(), new EmptyComponent().getElement());
+    return;
+  }
+
   renderElement(eventsContentComponent.getElement(), new SortComponent().getElement());
 
   const dayPoints = getMapOfPointsByDays(sortedPoints);
